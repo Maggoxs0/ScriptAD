@@ -1,0 +1,53 @@
+# Import du module Active Directory
+Import-Module ActiveDirectory
+
+# Chemin du fichier CSV
+$csvPath = "C:\Chemin\vers\users.csv"
+
+# Import des données
+$users = Import-Csv -Path $csvPath -Delimiter ","
+
+# Création des utilisateurs
+foreach ($user in $users) {
+    $userParams = @{
+        SamAccountName    = $user.SAMAccount
+        GivenName         = $user.GivenName
+        Surname           = $user.Surname
+        DisplayName       = $user.DisplayName
+        Name              = "$($user.GivenName) $($user.Surname)"
+        UserPrincipalName = "$($user.SAMAccount)@domaine.fr"
+        AccountPassword   = ConvertTo-SecureString $user.Password -AsPlainText -Force
+        Enabled           = $true
+        Path              = $user.OU
+        ChangePasswordAtLogon = $true
+    }
+    
+    try {
+        New-ADUser @userParams -ErrorAction Stop
+        Write-Host "Utilisateur $($user.SAMAccount) créé avec succès" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Erreur lors de la création de $($user.SAMAccount) : $_" -ForegroundColor Red
+    }
+}
+
+# Ajout des administrateurs
+$adminUsers = $users | Where-Object { $_.IsAdmin -eq "Yes" }
+
+foreach ($admin in $adminUsers) {
+    try {
+        Add-ADGroupMember -Identity "Domain Admins" -Members $admin.SAMAccount -ErrorAction Stop
+        Write-Host "$($admin.SAMAccount) ajouté aux administrateurs" -ForegroundColor Cyan
+    }
+    catch {
+        Write-Host "Erreur d'ajout admin pour $($admin.SAMAccount) : $_" -ForegroundColor Red
+    }
+}
+
+
+
+# Vérification des comptes créés
+Get-ADUser -Filter * -SearchBase "OU=Utilisateurs,DC=domaine,DC=fr" | Measure-Object
+
+# Vérification des administrateurs
+Get-ADGroupMember -Identity "Domain Admins" | Select-Object Name,SamAccountName
