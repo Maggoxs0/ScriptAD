@@ -43,11 +43,3 @@ foreach ($admin in $adminUsers) {
         Write-Host "Erreur d'ajout admin pour $($admin.SAMAccount) : $_" -ForegroundColor Red
     }
 }
-
-
-
-# Vérification des comptes créés
-Get-ADUser -Filter * -SearchBase "OU=Utilisateurs,DC=domaine,DC=fr" | Measure-Object
-
-# Vérification des administrateurs
-Get-ADGroupMember -Identity "Domain Admins" | Select-Object Name,SamAccountName
