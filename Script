@@ -1,10 +1,10 @@
 # Import du module Active Directory
 Import-Module ActiveDirectory
 
-# Chemin du fichier CSV
+# Chemin du CSV
 $csvPath = "C:\Chemin\vers\users.csv"
 
-# Import des données
+# Import du CSV
 $users = Import-Csv -Path $csvPath -Delimiter ","
 
 # Création des utilisateurs
