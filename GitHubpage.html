@@ -19,10 +19,11 @@
                 <th>Nom</th>
                 <th>Type</th>
                 <th>Lien</th>
+                <th>Ouvrir</th>
             </tr>
         </thead>
         <tbody id="file-list">
-            <tr><td colspan="3">Chargement...</td></tr>
+            <tr><td colspan="4">Chargement...</td></tr>
         </tbody>
     </table>
 
@@ -42,6 +43,7 @@
                     <td>${file.name}</td>
                     <td>${file.type}</td>
                     <td><a href="${file.html_url}" target="_blank">Voir</a></td>
+                    <td><a href="${file.download_url}" target="_blank">Ouvrir</a></td>
                 `;
                 fileList.appendChild(row);
             });
